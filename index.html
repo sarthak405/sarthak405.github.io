@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WatsonX powered Virtual Assistant</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('https://s.yimg.com/uu/api/res/1.2/7SdcVjgCITddlV7mUWwN7w--~B/Zmk9ZmlsbDtoPTU2Mjt3PTg3NTthcHBpZD15dGFjaHlvbg--/https://media-mbst-pub-ue1.s3.amazonaws.com/creatr-uploaded-images/2023-05/d9ff5c90-eea1-11ed-bbbe-0cd86e9bc3d9.cf.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<script>
+  window.watsonAssistantChatOptions = {
+    integrationID: "b41dc081-0c73-4b2f-89a3-8a97c2b3cc08", // The ID of this integration.
+    region: "eu-gb", // The region your integration is hosted in.
+    serviceInstanceID: "bd223aeb-6f31-4182-8761-4eaf71ad238f", // The ID of your service instance.
+    onLoad: function(instance) { instance.render(); }
+  };
+  setTimeout(function(){
+    const t=document.createElement('script');
+    t.src="https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
+    document.head.appendChild(t);
+  });
+</script>
+</html>
