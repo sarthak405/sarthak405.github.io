@@ -1,31 +1,677 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WatsonX powered Virtual Assistant</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-image: url('https://s.yimg.com/uu/api/res/1.2/7SdcVjgCITddlV7mUWwN7w--~B/Zmk9ZmlsbDtoPTU2Mjt3PTg3NTthcHBpZD15dGFjaHlvbg--/https://media-mbst-pub-ue1.s3.amazonaws.com/creatr-uploaded-images/2023-05/d9ff5c90-eea1-11ed-bbbe-0cd86e9bc3d9.cf.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            font-family: Arial, sans-serif;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sarthak Mishra — AI & Data Science</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lora:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0c0c0e;
+      --bg2: #131318;
+      --amber: #e8a020;
+      --amber-dim: #a36d0f;
+      --cream: #f0ead8;
+      --muted: #7a7a8a;
+      --border: #222230;
+      --card: #16161e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: 'Lora', Georgia, serif;
+      font-size: 16px;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.35;
+    }
+
+    /* Grid lines */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,160,32,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,160,32,0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(12,12,14,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--amber);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+
+    .nav-links a:hover { color: var(--amber); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 4rem 4rem;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      color: var(--amber);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.35s forwards;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--amber);
+    }
+
+    .hero-subtitle {
+      font-family: 'Lora', serif;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s forwards;
+    }
+
+    .hero-contacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.65s forwards;
+    }
+
+    .contact-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      color: var(--cream);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1.1rem;
+      border-radius: 2px;
+      transition: border-color 0.25s, color 0.25s;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .contact-pill:hover {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    /* Decorative large text */
+    .hero-deco {
+      position: absolute;
+      right: -0.02em;
+      bottom: -0.15em;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(10rem, 22vw, 22rem);
+      font-weight: 900;
+      font-style: italic;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(232,160,32,0.07);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .hero-line {
+      position: absolute;
+      bottom: 3rem;
+      left: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 1s 1s forwards;
+    }
+
+    .hero-line::before {
+      content: '';
+      display: block;
+      width: 2.5rem;
+      height: 1px;
+      background: var(--amber);
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--amber);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.1;
+    }
+
+    .divider {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin-left: 1rem;
+    }
+
+    /* ── EXPERIENCE CARDS ── */
+    .exp-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .exp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      position: relative;
+      transition: border-color 0.3s, transform 0.3s;
+      cursor: default;
+    }
+
+    .exp-card:hover {
+      border-color: var(--amber-dim);
+      transform: translateX(4px);
+    }
+
+    .exp-card.current::before {
+      content: 'CURRENT';
+      position: absolute;
+      top: 1.5rem;
+      right: 1.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--amber);
+      border: 1px solid var(--amber);
+      padding: 0.2rem 0.5rem;
+      border-radius: 1px;
+    }
+
+    .exp-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+      margin-bottom: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .exp-role {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--cream);
+    }
+
+    .exp-company {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--amber);
+      letter-spacing: 0.05em;
+    }
+
+    .exp-period {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-left: auto;
+    }
+
+    .exp-bullets {
+      margin-top: 1rem;
+      padding-left: 1.1rem;
+      list-style: none;
+    }
+
+    .exp-bullets li {
+      position: relative;
+      font-size: 0.9rem;
+      color: #a8a8b8;
+      margin-bottom: 0.5rem;
+      padding-left: 1rem;
+      line-height: 1.6;
+    }
+
+    .exp-bullets li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--amber);
+      font-size: 1rem;
+      top: -0.05em;
+    }
+
+    /* ── TAGS ── */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.65rem;
+      border-radius: 1px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* ── PUBLICATIONS / CERTS ── */
+    .pub-list { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .pub-item {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: border-color 0.3s;
+    }
+
+    .pub-item:hover { border-color: var(--amber-dim); }
+
+    .pub-icon {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--amber);
+      border: 1px solid var(--amber-dim);
+      padding: 0.3rem 0.5rem;
+      white-space: nowrap;
+      margin-top: 0.15rem;
+    }
+
+    .pub-text {
+      font-size: 0.9rem;
+      color: #a8a8b8;
+      line-height: 1.6;
+    }
+
+    /* ── EDUCATION ── */
+    .edu-block {
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .edu-degree {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--cream);
+    }
+
+    .edu-school {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--amber);
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+
+    .edu-year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: rgba(232,160,32,0.25);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    .footer-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 7rem 1.5rem 3rem; }
+      section { padding: 4rem 1.5rem; }
+      footer { padding: 2rem 1.5rem; }
+      .exp-period { margin-left: 0; }
+      .exp-card.current::before { position: static; display: inline-block; margin-top: 0.5rem; }
+    }
+  </style>
 </head>
-<script>
-  window.watsonAssistantChatOptions = {
-    integrationID: "b41dc081-0c73-4b2f-89a3-8a97c2b3cc08", // The ID of this integration.
-    region: "eu-gb", // The region your integration is hosted in.
-    serviceInstanceID: "bd223aeb-6f31-4182-8761-4eaf71ad238f", // The ID of your service instance.
-    onLoad: function(instance) { instance.render(); }
-  };
-  setTimeout(function(){
-    const t=document.createElement('script');
-    t.src="https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
-    document.head.appendChild(t);
-  });
-</script>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">SM / Portfolio</div>
+    <ul class="nav-links">
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#publications">Publications</a></li>
+      <li><a href="#education">Education</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Advisory Data Scientist &amp; AI Architect</div>
+    <h1 class="hero-name">Sarthak<br/><em>Mishra</em></h1>
+    <p class="hero-subtitle">
+      Building production-grade Generative AI systems — multi-agent orchestration, LLM inference, and enterprise RAG pipelines.
+    </p>
+    <div class="hero-contacts">
+      <a class="contact-pill" href="mailto:sarthak405@gmail.com">sarthak405@gmail.com</a>
+      <a class="contact-pill" href="tel:+919560922269">+91 95609 22269</a>
+      <a class="contact-pill" href="https://linkedin.com/in/sarthak405" target="_blank">linkedin.com/in/sarthak405</a>
+    </div>
+    <div class="hero-line">IIT Delhi · CS &amp; Engineering</div>
+    <div class="hero-deco">AI</div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-header">
+      <span class="section-label">01</span>
+      <h2 class="section-title">Experience</h2>
+      <div class="divider"></div>
+      <span class="section-label" style="white-space:nowrap">Work History</span>
+    </div>
+
+    <div class="exp-list">
+
+      <!-- Tekion -->
+      <div class="exp-card current reveal">
+        <div class="exp-meta">
+          <div class="exp-role">Staff Data Scientist</div>
+          <div class="exp-company">Tekion Corp</div>
+          <div class="exp-period">Feb 2026 – Present</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Leading AI/ML initiatives within Tekion's automotive retail technology platform.</li>
+          <li>Designing and building intelligent data science systems for dealership operations and customer experience.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">GenAI</span>
+          <span class="tag">Automotive Tech</span>
+          <span class="tag">AI Agents</span>
+          <span class="tag">LangGraph</span>
+        </div>
+      </div>
+
+      <!-- IBM Advisory -->
+      <div class="exp-card reveal">
+        <div class="exp-meta">
+          <div class="exp-role">Advisory Data Scientist</div>
+          <div class="exp-company">IBM</div>
+          <div class="exp-period">Jul 2024 – Jan 2026</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Led and mentored a team of 6–8 data scientists and ML engineers, owning sprint planning, technical direction, and delivery for multiple Generative AI initiatives.</li>
+          <li>Spearheaded a commercialized SAP GenAI product automating Technical Specification generation using GPT-4o, multimodal document understanding, and custom RAG pipelines — 30–40% productivity improvement.</li>
+          <li>Designed multi-agent GenAI systems using LangChain, LangGraph, AutoGen, and Strands, deployed on AWS and Azure.</li>
+          <li>Guided team on LLM fine-tuning (PEFT/LoRA), quantization (4-bit), and RoPE scaling for lower inference costs.</li>
+          <li>Led deployment of LLM inference endpoints on AWS EC2, integrating Amazon Bedrock, Azure OpenAI, and IBM watsonx.ai.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">LangGraph</span>
+          <span class="tag">LangChain</span>
+          <span class="tag">AutoGen</span>
+          <span class="tag">GPT-4o</span>
+          <span class="tag">AWS</span>
+          <span class="tag">Azure</span>
+          <span class="tag">RAG</span>
+          <span class="tag">PEFT / LoRA</span>
+          <span class="tag">Bedrock</span>
+          <span class="tag">watsonx.ai</span>
+        </div>
+      </div>
+
+      <!-- IBM Senior -->
+      <div class="exp-card reveal">
+        <div class="exp-meta">
+          <div class="exp-role">Senior Data Scientist</div>
+          <div class="exp-company">IBM</div>
+          <div class="exp-period">Jul 2019 – Jun 2024</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Designed end-to-end ML solutions across time-series forecasting, optimization, computer vision, and audio analytics.</li>
+          <li>Implemented transformer-based forecasting models (PatchTST, TimesFM) for sales and inventory planning; achieved MAPE of 0.19.</li>
+          <li>Solved linear and quadratic optimization problems using CPLEX, PuLP, and QP solvers for operational decision-making.</li>
+          <li>Implemented computer vision and audio ML pipelines (GoogLeNet, YOLOv5, GMM-based models) within IBM Maximo Visual Inspection, achieving ~90% accuracy.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">PatchTST</span>
+          <span class="tag">TimesFM</span>
+          <span class="tag">YOLOv5</span>
+          <span class="tag">CPLEX</span>
+          <span class="tag">Computer Vision</span>
+          <span class="tag">Forecasting</span>
+          <span class="tag">IBM Maximo</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PUBLICATIONS & CERTS -->
+  <section id="publications">
+    <div class="section-header">
+      <span class="section-label">02</span>
+      <h2 class="section-title">Publications &amp; Recognition</h2>
+      <div class="divider"></div>
+    </div>
+
+    <div class="pub-list">
+      <div class="pub-item reveal">
+        <div class="pub-icon">PUB</div>
+        <div class="pub-text">
+          Co-authored peer-reviewed research — <em>"Navigating ethical minefields: a multi-stakeholder approach to assessing interconnected risks in Generative AI using grey DEMATEL"</em> — published in <strong>Frontiers in Artificial Intelligence</strong>.
+        </div>
+      </div>
+      <div class="pub-item reveal">
+        <div class="pub-icon">SPK</div>
+        <div class="pub-text">
+          Invited speaker at <strong>GenAI ML Conclave – Bangalore (Feb 2025)</strong>, presenting on agentic AI systems, Computer-Using Generalist Agents (CUGA), and emerging GenAI architectures.
+        </div>
+      </div>
+      <div class="pub-item reveal">
+        <div class="pub-icon">SPK</div>
+        <div class="pub-text">
+          Selected to represent <strong>Agentic AI and AI Governance</strong> at the IBM Consulting and IBM Technology Conclave, engaging with 200+ enterprise clients and leaders.
+        </div>
+      </div>
+      <div class="pub-item reveal">
+        <div class="pub-icon">CERT</div>
+        <div class="pub-text">
+          <strong>Certified Data Scientist – Level 1</strong>, The Open Group. Completed <strong>MIT xPRO Quantum Computing Fundamentals</strong> (4 CEUs). Completed <strong>Watsonx Orchestrate Technical Bootcamp</strong> in enterprise multi-agent orchestration.
+        </div>
+      </div>
+      <div class="pub-item reveal">
+        <div class="pub-icon">WRK</div>
+        <div class="pub-text">
+          Participated in the <strong>AISG and AIIS Asset and Offering Workshop</strong>, focused on scalable and ethical AI solution design.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <div class="section-header">
+      <span class="section-label">03</span>
+      <h2 class="section-title">Education</h2>
+      <div class="divider"></div>
+    </div>
+
+    <div class="edu-block reveal">
+      <div>
+        <div class="edu-degree">B.Tech — Computer Science &amp; Engineering</div>
+        <div class="edu-school">Indian Institute of Technology, Delhi</div>
+      </div>
+      <div class="edu-year">2019</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-name">Sarthak Mishra</div>
+    <div class="footer-mono">sarthak405@gmail.com &nbsp;·&nbsp; Chennai, India</div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          const delay = e.target.closest('.exp-list, .pub-list')
+            ? [...e.target.parentElement.children].indexOf(e.target) * 80
+            : 0;
+          setTimeout(() => e.target.classList.add('visible'), delay);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
 </html>
